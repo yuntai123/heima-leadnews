@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.file.service.FileStorageService;
-import com.heima.model.article.pojos.WmMaterial;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.dtos.WmMaterialDto;
+import com.heima.model.wemedia.pojos.WmMaterial;
 import com.heima.utils.thread.WmThreadLocalUtil;
 import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.service.WmMaterialService;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+
 @Slf4j
 @Service
 @Transactional
@@ -30,6 +31,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
     @Autowired
     private FileStorageService fileStorageService;
+
 
     /**
      * 图片上传
@@ -40,20 +42,20 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     public ResponseResult uploadPicture(MultipartFile multipartFile) {
 
         //1.检查参数
-        if (multipartFile == null || multipartFile.getSize() == 0){
+        if(multipartFile == null || multipartFile.getSize() == 0){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
-        //2.上传图片到MinIO
-        String fileName = UUID.randomUUID().toString().replace("-","");
-        //
-        String originalFileName = multipartFile.getOriginalFilename();
-        String postfix = originalFileName.substring(originalFileName.lastIndexOf("."));
+        //2.上传图片到minIO中
+        String fileName = UUID.randomUUID().toString().replace("-", "");
+        //aa.jpg
+        String originalFilename = multipartFile.getOriginalFilename();
+        String postfix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileId = null;
         try {
-            fileId = fileStorageService.uploadImgFile("",fileName + postfix, multipartFile.getInputStream());
+            fileId = fileStorageService.uploadImgFile("", fileName + postfix, multipartFile.getInputStream());
             log.info("上传图片到MinIO中，fileId:{}",fileId);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             log.error("WmMaterialServiceImpl-上传文件失败");
         }
@@ -68,6 +70,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         save(wmMaterial);
 
         //4.返回结果
+
         return ResponseResult.okResult(wmMaterial);
     }
 
@@ -78,6 +81,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
      */
     @Override
     public ResponseResult findList(WmMaterialDto dto) {
+
         //1.检查参数
         dto.checkParam();
 
@@ -85,17 +89,21 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         IPage page = new Page(dto.getPage(),dto.getSize());
         LambdaQueryWrapper<WmMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //是否收藏
-        if(dto.getIsCollection() != null || dto.getIsCollection() == 1){
-            lambdaQueryWrapper.eq(WmMaterial::getIsCollection, dto.getIsCollection());
+        if(dto.getIsCollection() != null && dto.getIsCollection() == 1){
+            lambdaQueryWrapper.eq(WmMaterial::getIsCollection,dto.getIsCollection());
         }
 
         //按照用户查询
+        lambdaQueryWrapper.eq(WmMaterial::getUserId,WmThreadLocalUtil.getUser().getId());
+
+        //按照时间倒序
         lambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
+
 
         page = page(page,lambdaQueryWrapper);
 
-        //3.结束返回
-        ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(),(int)page.getTotal());
+        //3.结果返回
+        ResponseResult responseResult = new PageResponseResult(dto.getPage(),dto.getSize(),(int)page.getTotal());
         responseResult.setData(page.getRecords());
         return responseResult;
     }

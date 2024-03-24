@@ -9,16 +9,18 @@ import com.heima.model.wemedia.pojos.WmNews;
 public interface WmNewsService extends IService<WmNews> {
 
     /**
-     * 查询文章
+     * 条件查询文章列表
      * @param dto
      * @return
      */
-    public ResponseResult findAll(WmNewsPageReqDto dto);
+    public ResponseResult findList(WmNewsPageReqDto dto);
 
     /**
-     *  发布文章或保存草稿
+     * 发布修改文章或保存为草稿
      * @param dto
      * @return
      */
     public ResponseResult submitNews(WmNewsDto dto);
+
+
 }
