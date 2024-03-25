@@ -65,15 +65,21 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
             //自管理的敏感词过滤
             boolean isSensitive = handleSensitiveScan((String) textAndImages.get("content"), wmNews);
-            if (!isSensitive) return;
+            /*if (!isSensitive) {
+                return;
+            }
 
             //2.审核文本内容  阿里云接口
             boolean isTextScan = handleTextScan((String) textAndImages.get("content"), wmNews);
-            if (!isTextScan) return;
+            if (!isTextScan) {
+                return;
+            }
 
             //3.审核图片  阿里云接口
             boolean isImageScan = handleImageScan((List<String>) textAndImages.get("images"), wmNews);
-            if (!isImageScan) return;
+            if (!isImageScan) {
+                return;
+            }*/
 
             //4.审核成功，保存app端的相关的文章数据
             ResponseResult responseResult = saveAppArticle(wmNews);
