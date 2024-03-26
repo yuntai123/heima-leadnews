@@ -1,6 +1,6 @@
 package com.heima.schedule.service;
 
-import com.heima.model.schedule.pojos.dtos.Task;
+import com.heima.model.schedule.dtos.Task;
 
 /**
  * Created with IntelliJ IDEA.

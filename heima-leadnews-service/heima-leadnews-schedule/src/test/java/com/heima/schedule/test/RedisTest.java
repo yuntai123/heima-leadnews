@@ -2,8 +2,8 @@ package com.heima.schedule.test;
 
 import com.alibaba.fastjson.JSON;
 import com.heima.common.redis.CacheService;
+import com.heima.model.schedule.dtos.Task;
 import com.heima.schedule.ScheduleApplication;
-import com.heima.model.schedule.pojos.dtos.Task;
 import com.sun.istack.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
